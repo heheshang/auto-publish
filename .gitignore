@@ -19,3 +19,5 @@ __pycache__/
 *.tmp_update_tmp.*
 *.tmp_update_tmp_new
 .venv
+xiaohongshu_auto_publisher.egg-info
+build

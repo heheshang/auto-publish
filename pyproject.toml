@@ -8,13 +8,9 @@ version = "1.0.0"
 description = "小红书自动发布工具"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
-authors = [
-    {name = "Your Name", email = "your.email@example.com"},
-]
-maintainers = [
-    {name = "Your Name", email = "your.email@example.com"},
-]
+license = { text = "MIT" }
+authors = [{ name = "Shikun Shi", email = "shang.shi.kun@163.com" }]
+maintainers = [{ name = "Shikun Shi", email = "shang.shi.kun@163.com" }]
 keywords = ["xiaohongshu", "automation", "publisher", "social-media"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -98,12 +94,9 @@ dev = [
     "isort>=5.12.0",
     "flake8>=6.0.0",
     "mypy>=1.0.0",
+    "ruff>=0.1.0",
 ]
-test = [
-    "pytest>=7.0.0",
-    "pytest-asyncio>=0.21.0",
-    "pytest-cov>=4.0.0",
-]
+test = ["pytest>=7.0.0", "pytest-asyncio>=0.21.0", "pytest-cov>=4.0.0"]
 
 [project.urls]
 Homepage = "https://github.com/yourusername/xiaohongshu-auto-publisher"
@@ -122,23 +115,6 @@ exclude = ["tests*"]
 [tool.setuptools.package-data]
 src = ["*.yml", "*.yaml", "*.json"]
 
-[tool.black]
-line-length = 88
-target-version = ['py38']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
 
 [tool.isort]
 profile = "black"
@@ -198,3 +174,13 @@ module = [
     "fake_useragent.*",
 ]
 ignore_missing_imports = true
+
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.format]
+# 与 black 行为完全一致
+quote-style = "double"
+indent-style = "space"

@@ -12,7 +12,9 @@ from dashscope import ImageSynthesis
 def generate_text():
     client = OpenAI(
         # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx",
-        api_key=os.getenv("DASHSCOPE_API_KEY"), # 如何获取API Key：https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key
+        api_key=os.getenv(
+            "DASHSCOPE_API_KEY"
+        ),  # 如何获取API Key：https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
     )
 
@@ -20,37 +22,39 @@ def generate_text():
         # 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
         model="qwen-plus",  # qwen-plus 属于 qwen3 模型，如需开启思考模式，请参见：https://help.aliyun.com/zh/model-studio/deep-thinking
         messages=[
-            {'role': 'system', 'content': 'You are a helpful assistant.'},
-            {'role': 'user', 'content': '你是谁？'}
-        ]
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "你是谁？"},
+        ],
     )
     print(completion.choices[0].message.content)
 
-def generate_image(prompt:str=""):
 
+def generate_image(prompt: str = ""):
     prompt = "一副典雅庄重的对联悬挂于厅堂之中，房间是个安静古典的中式布置，桌子上放着一些青花瓷，对联上左书“义本生知人机同道善思新”，右书“通云赋智乾坤启数高志远”， 横批“智启通义”，字体飘逸，中间挂在一着一副中国风的画作，内容是岳阳楼。"
 
     # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx"
     api_key = os.getenv("DASHSCOPE_API_KEY")
 
-    print('----同步调用，请等待任务执行----')
-    rsp = ImageSynthesis.call(api_key=api_key,
-                            model="qwen-image",
-                            prompt=prompt,
-                            n=1,
-                            size='1328*1328')
-    print('response: %s' % rsp)
+    print("----同步调用，请等待任务执行----")
+    rsp = ImageSynthesis.call(
+        api_key=api_key,
+        model="qwen-image",
+        prompt=prompt,
+        n=1,
+        size="1328*1328",  # pyright: ignore[reportArgumentType]
+    )
+    print("response: %s" % rsp)
     if rsp.status_code == HTTPStatus.OK:
         # 在当前目录下保存图片
         for result in rsp.output.results:
             file_name = PurePosixPath(unquote(urlparse(result.url).path)).parts[-1]
-            with open('./%s' % file_name, 'wb+') as f:
+            with open("./%s" % file_name, "wb+") as f:
                 f.write(requests.get(result.url).content)
     else:
-        print('同步调用失败, status_code: %s, code: %s, message: %s' %
-            (rsp.status_code, rsp.code, rsp.message))
-
-
+        print(
+            "同步调用失败, status_code: %s, code: %s, message: %s"
+            % (rsp.status_code, rsp.code, rsp.message)
+        )
 
 
 def main():
@@ -72,15 +76,12 @@ def main():
         # input_code = input("请输入验证码或按回车继续:")
         # page.get_by_placeholder("输入验证码").fill(input_code)
 
-
         # 登录操作
         # page.locator("form").get_by_role("button", name="登录").click()
         # page.get_by_text("同意并继续").click()
 
-
         input_code = input("请扫描二维码")
         if input_code:
-        
             # 进入创作中心
             page.get_by_role("button", name="创作中心").click()
             page.locator("#explore-guide-menu use").click()
@@ -89,7 +90,9 @@ def main():
             with page.expect_popup() as popup_info:
                 page.get_by_role("link", name="发布").click()
             page1 = popup_info.value
-            page1.goto("https://creator.xiaohongshu.com/publish/publish?source=official")
+            page1.goto(
+                "https://creator.xiaohongshu.com/publish/publish?source=official"
+            )
             time.sleep(5)
 
             # 上传图文内容
@@ -122,6 +125,7 @@ def main():
 
             # 关闭浏览器
         browser.close()
+
 
 if __name__ == "__main__":
     # main()

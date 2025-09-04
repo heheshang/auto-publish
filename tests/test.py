@@ -1,4 +1,4 @@
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 
 
 def test_example(page: Page) -> None:
@@ -19,8 +19,12 @@ def test_example(page: Page) -> None:
     page.get_by_role("textbox").nth(1).click()
     page.get_by_role("textbox").nth(1).fill("sfgsfgsfgsdfg")
     page.get_by_text("#无后顾之忧").first.click()
-    page.get_by_text("#数据恢复#小白也能懂#要具体问题具体分析#完美解决方案 展开 #数据恢复#小白也能懂#要具体问题具体分析#完美解决方案#希望大数据推给有需要的人#谁来教教我#").click()
+    page.get_by_text(
+        "#数据恢复#小白也能懂#要具体问题具体分析#完美解决方案 展开 #数据恢复#小白也能懂#要具体问题具体分析#完美解决方案#希望大数据推给有需要的人#谁来教教我#"
+    ).click()
     page.get_by_text("#希望大数据推给有需要的人").first.click()
     page.get_by_role("button", name="发布").click()
-    page.goto("https://creator.xiaohongshu.com/publish/success?source&bind_status=not_bind&__debugger__=&proxy=")
+    page.goto(
+        "https://creator.xiaohongshu.com/publish/success?source&bind_status=not_bind&__debugger__=&proxy="
+    )
     page.goto("https://creator.xiaohongshu.com/publish/publish?source=&published=true")
