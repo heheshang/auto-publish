@@ -7,7 +7,13 @@ from urllib.parse import urlparse, unquote
 from pathlib import PurePosixPath
 import requests
 from dashscope import ImageSynthesis
-
+class Detail:
+    def __init__(self, title, left,right,content,file_name):
+        self.title = title
+        self.left = left
+        self.right = right
+        self.content = content
+        self.file_name = file_name
 
 def generate_text():
     client = OpenAI(
@@ -22,19 +28,47 @@ def generate_text():
         # 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
         model="qwen-plus",  # qwen-plus 属于 qwen3 模型，如需开启思考模式，请参见：https://help.aliyun.com/zh/model-studio/deep-thinking
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": "你是谁？"},
+            {"role": "system", "content": "你是一个具有诗情画意的对联生成器。"},
+            {"role": "user", "content": "请为我生成一副对联，内容要典雅庄重，适合悬挂在大厅之中 输出对联上联 下联和横批 20字以内。"},
+           
         ],
     )
-    print(completion.choices[0].message.content)
+    msg1 = completion.choices[0].message.content
+    if msg1 is not None:
+        print("对联：%s" % msg1)
+        left = msg1.split("\n")[0].split("：")[1]
+        right = msg1.split("\n")[1].split("：")[1]
+        title = msg1.split("\n")[2].split("：")[1]
+        detail = Detail(title,left,right,"","")
+
+    completion = client.chat.completions.create(
+        # 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
+        model="qwen-plus",  # qwen-plus 属于 qwen3 模型，如需开启思考模式，请参见：https://help.aliyun.com/zh/model-studio/deep-thinking
+        messages=[
+            {"role": "system", "content": "你是一个具有诗情画意的对联生成器。"},
+            {"role": "user", "content": "请根据对联上联：%s下联：%s横批：%s 描述对联具体意境。只写意境不体现对联内容。100字以内。" % (detail.left,detail.right,detail.title)},
+           
+        ],
+    )
+    msg2 = completion.choices[0].message.content
+    detail.content=msg2
+    print("意境：%s" % msg2)
+    return detail
 
 
-def generate_image(prompt: str = ""):
-    prompt = "一副典雅庄重的对联悬挂于厅堂之中，房间是个安静古典的中式布置，桌子上放着一些青花瓷，对联上左书“义本生知人机同道善思新”，右书“通云赋智乾坤启数高志远”， 横批“智启通义”，字体飘逸，中间挂在一着一副中国风的画作，内容是岳阳楼。"
+def generate_image(detail:Detail):
+    
+    prompt = """一副典雅庄重的对联悬挂于大厅之中，房间是个安静古典的中式布置，桌子上放着一些青花瓷，
+    
+    上联：%s
+    下联：%s
+    横批：%s
+    字体飘逸，中间挂有一副中国风的画作,根据内容:%s进行创作
+      """ % (detail.left,detail.right,detail.title,detail.content)
 
     # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx"
     api_key = os.getenv("DASHSCOPE_API_KEY")
-
+    file_name = ""
     print("----同步调用，请等待任务执行----")
     rsp = ImageSynthesis.call(
         api_key=api_key, # type: ignore
@@ -50,14 +84,19 @@ def generate_image(prompt: str = ""):
             file_name = PurePosixPath(unquote(urlparse(result.url).path)).parts[-1]
             with open("./%s" % file_name, "wb+") as f:
                 f.write(requests.get(result.url).content)
+                print("图片已保存至当前目录，文件名：%s" % file_name)
+                print("----同步调用结束----")
+                detail.file_name=file_name
     else:
         print(
             "同步调用失败, status_code: %s, code: %s, message: %s"
             % (rsp.status_code, rsp.code, rsp.message)
         )
+        
+    return detail
 
 
-def main():
+def main(detail:Detail):
     with sync_playwright() as p:
         # 启动浏览器
         browser = p.chromium.launch(headless=False)
@@ -98,10 +137,10 @@ def main():
             # 上传图文内容
             page1.get_by_text("上传图文").nth(1).click()
             time.sleep(5)
-            page1.get_by_role("textbox").click()
-            time.sleep(5)
-            page1.screenshot(path="screenshot-webkit.png")
-            page1.get_by_role("textbox").set_input_files("screenshot-webkit.png")
+            # page1.get_by_role("textbox").click()
+            # time.sleep(5)
+            # page1.screenshot(path="screenshot-webkit.png")
+            page1.get_by_role("textbox").set_input_files(detail.file_name)
             print("setInputFiles")
             time.sleep(5)
 
@@ -109,13 +148,13 @@ def main():
             page1.get_by_placeholder("填写标题会有更多赞哦～").click()
             print("click placeholder")
             time.sleep(5)
-            page1.get_by_placeholder("填写标题会有更多赞哦～").fill("12222")
+            page1.get_by_placeholder("填写标题会有更多赞哦～").fill(detail.title)
             print("填写标题会有更多赞哦")
             time.sleep(5)
             page1.get_by_role("textbox").nth(1).click()
             print("click TEXTBOX")
             time.sleep(5)
-            page1.get_by_role("textbox").nth(1).fill("11112222")
+            page1.get_by_role("textbox").nth(1).fill(detail.content)
             print("11112222")
             time.sleep(5)
 
@@ -127,7 +166,9 @@ def main():
         browser.close()
 
 
+
 if __name__ == "__main__":
-    # main()
-    generate_text()
-    generate_image()
+    detail= generate_text()
+    detail = generate_image(detail)
+    main(detail)
+
