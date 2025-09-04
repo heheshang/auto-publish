@@ -37,7 +37,7 @@ def generate_image(prompt: str = ""):
 
     print("----同步调用，请等待任务执行----")
     rsp = ImageSynthesis.call(
-        api_key=api_key,
+        api_key=api_key, # type: ignore
         model="qwen-image",
         prompt=prompt,
         n=1,
