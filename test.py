@@ -1,0 +1,26 @@
+from playwright.sync_api import Page, expect
+
+
+def test_example(page: Page) -> None:
+    page.get_by_placeholder("手机号").click()
+    page.get_by_placeholder("手机号").fill("18201552650")
+    page.get_by_text("发送验证码").click()
+    page.get_by_placeholder("验证码").click()
+    page.get_by_placeholder("验证码").fill("926774")
+    page.get_by_role("button", name="登 录").click()
+    page.get_by_text("发布笔记").click()
+    page.get_by_text("上传图文").nth(1).click()
+    page.get_by_role("textbox").click()
+    page.get_by_role("textbox").set_input_files("20250811.png")
+    page.get_by_text("智能标题").click()
+    page.get_by_text("无损转有损真的不会失真吗？？？").click()
+    page.get_by_placeholder("填写标题会有更多赞哦～").click()
+    page.get_by_placeholder("填写标题会有更多赞哦～").click()
+    page.get_by_role("textbox").nth(1).click()
+    page.get_by_role("textbox").nth(1).fill("sfgsfgsfgsdfg")
+    page.get_by_text("#无后顾之忧").first.click()
+    page.get_by_text("#数据恢复#小白也能懂#要具体问题具体分析#完美解决方案 展开 #数据恢复#小白也能懂#要具体问题具体分析#完美解决方案#希望大数据推给有需要的人#谁来教教我#").click()
+    page.get_by_text("#希望大数据推给有需要的人").first.click()
+    page.get_by_role("button", name="发布").click()
+    page.goto("https://creator.xiaohongshu.com/publish/success?source&bind_status=not_bind&__debugger__=&proxy=")
+    page.goto("https://creator.xiaohongshu.com/publish/publish?source=&published=true")
