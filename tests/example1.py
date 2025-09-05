@@ -1,3 +1,4 @@
+import re
 import time
 import os
 from playwright.sync_api import sync_playwright
@@ -100,12 +101,14 @@ def main(detail:Detail):
     with sync_playwright() as p:
         # 启动浏览器
         # browser = p.chromium.launch(headless=False)
-        browser = p.webkit.launch(headless=True)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 
         # 导航到目标页面
-        page.goto("https://www.xiaohongshu.com/explore")
+        page.goto("https://creator.xiaohongshu.com/login?selfLogout=true")
+        time.sleep(2)
+        page.locator("img").click()
         time.sleep(2)
         page.screenshot(path="screenshot-webkit.png")
         # 登录小红书
@@ -125,46 +128,36 @@ def main(detail:Detail):
 
         input_code = input("请扫描二维码")
         if input_code:
-            # 进入创作中心
-            page.get_by_role("button", name="创作中心").click()
-            page.locator("#explore-guide-menu use").click()
-
-            # 打开发布页面
-            with page.expect_popup() as popup_info:
-                page.get_by_role("link", name="发布").click()
-            page1 = popup_info.value
-            page1.goto(
-                "https://creator.xiaohongshu.com/publish/publish?source=official"
-            )
-            time.sleep(5)
-
-            # 上传图文内容
-            page1.get_by_text("上传图文").nth(1).click()
+            page.goto("https://creator.xiaohongshu.com/publish/publish?source=official")
+            time.sleep(5)          
+             # 上传图文内容
+            page.get_by_text("上传图文").nth(1).click()
             time.sleep(5)
             # page1.get_by_role("textbox").click()
             # time.sleep(5)
             # page1.screenshot(path="screenshot-webkit.png")
-            page1.get_by_role("textbox").set_input_files(detail.file_name)
+            page.get_by_role("textbox").set_input_files(detail.file_name)
             print("setInputFiles")
             time.sleep(5)
-
             # 填写标题和内容
-            page1.get_by_placeholder("填写标题会有更多赞哦～").click()
+            page.get_by_placeholder("填写标题会有更多赞哦～").click()
             print("click placeholder")
             time.sleep(5)
-            page1.get_by_placeholder("填写标题会有更多赞哦～").fill(detail.title)
+            page.get_by_placeholder("填写标题会有更多赞哦～").fill(detail.title)
             print("填写标题会有更多赞哦")
             time.sleep(5)
-            page1.get_by_role("textbox").nth(1).click()
+            page.get_by_role("textbox").nth(1).click()
             print("click TEXTBOX")
             time.sleep(5)
-            page1.get_by_role("textbox").nth(1).fill(detail.content)
+            page.get_by_role("textbox").nth(1).fill(detail.content)
             print("11112222")
             time.sleep(5)
 
             # 发布内容
-            page1.get_by_role("button", name="发布").click()
+            page.get_by_role("button", name="发布").click()
             time.sleep(5)
+        # ---------------------
+        context.close()
 
             # 关闭浏览器
         browser.close()
@@ -172,7 +165,8 @@ def main(detail:Detail):
 
 
 if __name__ == "__main__":
-    detail= generate_text()
-    detail = generate_image(detail)
+    # detail= generate_text()
+    # detail = generate_image(detail)
+    detail = Detail("1","2","3","3","4aa4bccc-c197-453b-b034-56b6890a9998-1.png")
     main(detail)
 
