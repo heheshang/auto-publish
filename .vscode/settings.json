@@ -1,3 +1,7 @@
 {
-    "makefile.configureOnOpen": false
+    "makefile.configureOnOpen": false,
+    "claude-code.enaableRealTimeErrors": true,
+  "claude-code.contextScope": "workspace",
+  "claude-code.inlineCompletions": false,
+  "claude-code.diagnosticsIntergartion": true
 }

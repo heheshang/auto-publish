@@ -67,9 +67,24 @@ def run(playwright: Playwright) -> None:
         context.storage_state(path=storage_state_path)
     
     # 后续发布流程代码...
-    page.goto("https://www.zhihu.com/creator", wait_until="networkidle")
-    human_like_mouse_move(page, page.get_by_role("button", name="发布", exact=True))
-    time.sleep(random.uniform(2, 4))
+    page.goto("https://zhuanlan.zhihu.com/write",timeout=60000)
+    human_like_mouse_move(page, page.get_by_placeholder("请输入标题（最多 100 个字）"))
+    page.get_by_placeholder("请输入标题（最多 100 个字）").click()
+    page.get_by_placeholder("请输入标题（最多 100 个字）").fill("标题标题标题标题标题标题标题标题标题标题标题标题")
+    human_like_mouse_move(page, page.locator("div").filter(has_text=re.compile(r"^请输入正文$")).nth(1))
+    page.locator("div").filter(has_text=re.compile(r"^请输入正文$")).nth(1).click()
+    human_like_mouse_move(page, page.get_by_role("textbox").nth(1))
+    page.get_by_role("textbox").nth(1).fill("内容内容内容内容内容内容内容内容内容内容内容内容内容内容····")
+    human_like_mouse_move(page, page.locator("label").filter(has_text="添加文章封面"))
+    # page.locator("label").filter(has_text="添加文章封面").click()
+    page.locator("label").filter(has_text="添加文章封面").set_input_files("78bb0f81-242c-4388-81fc-4581364efd09-1.png")
+    human_like_mouse_move(page, page.locator("label").filter(has_text="开启送礼物"))
+    page.locator("label").filter(has_text="开启送礼物").get_by_role("img").click()
+    human_like_mouse_move(page, page.get_by_role("button", name="确定"))
+    page.get_by_role("button", name="确定").click()
+    human_like_mouse_move(page, page.get_by_role("button", name="发布"))
+    page.get_by_role("button", name="发布").click()
+    
     
 with sync_playwright() as playwright:
     run(playwright)
