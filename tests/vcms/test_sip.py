@@ -10,10 +10,10 @@ import time
 from typing import List, Optional
 from decimal import Decimal
 
-api_app_key="724bebf3d9079f1b18f0ea69e51fc187"
-api_app_secret = "6d73acbb33f2e5b058ca2d082a09b079"
+api_app_key="7d71382be017cf4002d25bd14ca36a97"
+api_app_secret = "97b3c76de8b4ddcd713040844f563221"
 x_client_id='2ed2415237a65e0d5f0b6c0e4cbb8bc3'
-api_url = "https://vcms-api-third-test.local.opentide.com.cn/third/sip/brief/receive-qt"
+api_url = "https://vcms-api-third.opentide.com.cn/third/sip/brief/receive-qt"
 
 
 
@@ -388,7 +388,7 @@ def send_request_with_requests(
             url=api_url,
             headers=headers,
             json=data.to_dict(),
-            timeout=30
+            timeout=3000
         )
         return response
     except requests.RequestException as e:
