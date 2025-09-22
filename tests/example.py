@@ -7,13 +7,16 @@ from urllib.parse import urlparse, unquote
 from pathlib import PurePosixPath
 import requests
 from dashscope import ImageSynthesis
+
+
 class Detail:
-    def __init__(self, title, left,right,content,file_name):
+    def __init__(self, title, left, right, content, file_name):
         self.title = title
         self.left = left
         self.right = right
         self.content = content
         self.file_name = file_name
+
 
 def generate_text():
     client = OpenAI(
@@ -29,8 +32,10 @@ def generate_text():
         model="qwen-plus",  # qwen-plus 属于 qwen3 模型，如需开启思考模式，请参见：https://help.aliyun.com/zh/model-studio/deep-thinking
         messages=[
             {"role": "system", "content": "你是一个具有诗情画意的对联生成器。"},
-            {"role": "user", "content": "请为我生成一副对联，内容要典雅庄重，适合悬挂在大厅之中 输出对联上联 下联和横批 20字以内。"},
-           
+            {
+                "role": "user",
+                "content": "请为我生成一副对联，内容要典雅庄重，适合悬挂在大厅之中 输出对联上联 下联和横批 20字以内。",
+            },
         ],
     )
     msg1 = completion.choices[0].message.content
@@ -39,39 +44,47 @@ def generate_text():
         left = msg1.split("\n")[0].split("：")[1]
         right = msg1.split("\n")[1].split("：")[1]
         title = msg1.split("\n")[2].split("：")[1]
-        detail = Detail(title,left,right,"","")
+        detail = Detail(title, left, right, "", "")
 
     completion = client.chat.completions.create(
         # 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
         model="qwen-plus",  # qwen-plus 属于 qwen3 模型，如需开启思考模式，请参见：https://help.aliyun.com/zh/model-studio/deep-thinking
         messages=[
             {"role": "system", "content": "你是一个具有诗情画意的对联生成器。"},
-            {"role": "user", "content": "请根据对联上联：%s下联：%s横批：%s 描述对联具体意境。只写意境不体现对联内容。100字以内。" % (detail.left,detail.right,detail.title)},
-           
+            {
+                "role": "user",
+                "content": "请根据对联上联：%s下联：%s横批：%s 描述对联具体意境。只写意境不体现对联内容。100字以内。"
+                % (detail.left, detail.right, detail.title),
+            },
         ],
     )
     msg2 = completion.choices[0].message.content
-    detail.content=msg2
+    detail.content = msg2
     print("意境：%s" % msg2)
     return detail
 
 
-def generate_image(detail:Detail):
-    
+def generate_image(detail: Detail):
+
     prompt = """一副典雅庄重的对联悬挂于大厅之中，房间是个安静古典的中式布置，桌子上放着一些青花瓷，
     
     上联：%s
     下联：%s
     横批：%s
     字体飘逸，中间挂有一副中国风的画作,根据内容:%s进行创作
-      """ % (detail.left,detail.right,detail.title,detail.content)
+      """ % (
+        detail.left,
+        detail.right,
+        detail.title,
+        detail.content,
+    )
 
     # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx"
     api_key = os.getenv("DASHSCOPE_API_KEY")
     file_name = ""
     print("----同步调用，请等待任务执行----")
     rsp = ImageSynthesis.call(
-        api_key=api_key, # type: ignore
+        api_key=api_key,  # type: ignore
         model="qwen-image",
         prompt=prompt,
         n=1,
@@ -86,17 +99,17 @@ def generate_image(detail:Detail):
                 f.write(requests.get(result.url).content)
                 print("图片已保存至当前目录，文件名：%s" % file_name)
                 print("----同步调用结束----")
-                detail.file_name=file_name
+                detail.file_name = file_name
     else:
         print(
             "同步调用失败, status_code: %s, code: %s, message: %s"
             % (rsp.status_code, rsp.code, rsp.message)
         )
-        
+
     return detail
 
 
-def main(detail:Detail):
+def main(detail: Detail):
     with sync_playwright() as p:
         # 启动浏览器
         # browser = p.chromium.launch(headless=False)
@@ -170,9 +183,7 @@ def main(detail:Detail):
         browser.close()
 
 
-
 if __name__ == "__main__":
-    detail= generate_text()
+    detail = generate_text()
     detail = generate_image(detail)
     main(detail)
-
