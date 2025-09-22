@@ -242,7 +242,7 @@ def send_ebidding_invite(briefSubject:str,briefNo:str,endTime:str,syncType:str="
             briefNo=briefNo,
             endTime=endTime,
             syncType=syncType,
-            vendorJsondata="[{\"vendorName\":\"Samsung Electronics Co.,Ltd.\",\"vendorNo\":\"A0000001_L6B3\"},{\"vendorName\":\"三星(中国)投资有限公司上海分公司\",\"vendorNo\":\"A0000046_L6B3\"},{\"vendorName\":\"中国消费者报社\",\"vendorNo\":\"A0068806_L6B3\"}]"
+            vendorJsondata="[{\"vendorName\":\"Samsung Electronics Co.,Ltd.\",\"vendorNo\":\"A0000001_L6B3\"},{\"vendorName\":\"Samsung Electronics IM division\",\"vendorNo\":\"A0000019_L6B3\"}]"
             
         )
         print(f"状态码: {response.status_code}")
@@ -260,7 +260,7 @@ def send_ebidding_timeout(briefSubject:str,briefNo:str,endTime:str,syncType:str=
             briefNo=briefNo,
             endTime=endTime,
             syncType=syncType,
-            vendorJsondata="[{\"vendorName\":\"Samsung Electronics Co.,Ltd.\",\"vendorNo\":\"A0000001_L6B3\"},{\"vendorName\":\"三星(中国)投资有限公司上海分公司\",\"vendorNo\":\"A0000046_L6B3\"},{\"vendorName\":\"中国消费者报社\",\"vendorNo\":\"A0068806_L6B3\"}]"
+            vendorJsondata="[{\"vendorName\":\"Samsung Electronics Co.,Ltd.\",\"vendorNo\":\"A0000001_L6B3\"},{\"vendorName\":\"Samsung Electronics IM division\",\"vendorNo\":\"A0000019_L6B3\"}]"
 
         )
         print(f"状态码: {response.status_code}")
